@@ -27,9 +27,19 @@ const request = async ({...args}) => {
     const requestUrl = args.requestUrl
     const requestMethod = args.requestMethod
     const requestHeaders = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36'
     }
-    const requestBody = args.requestBody || {}
+
+    if( args.requestHeaders ){
+        const customHeaders = args.requestHeaders
+        for( let headerKey of Object.keys(customHeaders) ){
+            let headerValue = customHeaders[headerKey]
+            requestHeaders[headerKey] = headerValue
+        }
+    }
+
+    const requestBody = args.requestBody || null
     
     try{
         const response = await axios({

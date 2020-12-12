@@ -1,30 +1,14 @@
-const APISchema = require('../scraper/KalibrrAPISchema')
+const APISchema = require('./APISchema/KalibrrAPISchema')
 const JobsController = require('../controllers/Jobs')
 const request = require('../helper/Request')
+const JobMap = require('../helper/JobMap')
 const mongoDB = require('../models/Mongo')
-const mongoose = require('mongoose')
-const ObjectId = mongoose.Types.ObjectId
-const fs = require('fs')
 const moment = require('moment')
-
-const jobCategoryMap = async () => {
-    let jobCategoryModel = await mongoDB.model('job_category')
-    let jobCategory = await jobCategoryModel.find({})
-        jobCategory = jobCategory.map(category => new Object({code: category.search_id.kalibrr, id: category._id}))
-    let categoryMap = new Map()
-    for( let category of jobCategory ){
-        for( let code of category.code ){
-            categoryMap.set(code, ObjectId(category.id))
-        }
-    }
-    return categoryMap
-}
 
 const jobLocationFilter = async (currentJobLocation, jobLocation) => {
     for( let location of jobLocation ){
         if( currentJobLocation.toLowerCase().search(location.code.toLowerCase()) > -1 ) return location.id
     }
-
     return null
 }
 
@@ -33,7 +17,8 @@ const filterJobs = async(jobs) => {
      
     // Filtered Code for Vocational 
     const isVocationalCode = [150, 200, 300, 350]
-    const categoryMap = await jobCategoryMap()
+    let categoryMap = await JobMap.category()
+        categoryMap = categoryMap.kalibrr
 
     // Fetch locations from database
     jobLocationModel = await mongoDB.model('job_location')
@@ -108,14 +93,16 @@ exports.getJobs = async() => {
     const jobs = await scrapeJobs()
     const filteredJobs = await filterJobs(jobs)
     
-    console.log(`[INFO] Kalibrr - Database : Inserting data into Database ...`)
     try{
+        console.log(`[INFO] Kalibrr - Database Insert : Inserting ${filterJobs.length} jobs to database`)
         const jobCatalogueModel = await mongoDB.model('job_catalogue')
         await jobCatalogueModel.deleteMany({job_source: 'kalibrr'})
         await jobCatalogueModel.insertMany(filteredJobs)
+        console.log(`[INFO] Kalibr scraping successfuly`)
     }catch(exception){
-        console.log(`[ERROR] Kalibrr - Database : there's an error inserting data to databse. ${exception.message}`)
+        console.log(`[ERROR] Kalibrr - Database Insert : there's an error inserting data to databse. ${exception.message}`)
     }
+    
 
     console.log(`[INFO] Kalibrr Scraping Done ...`)
 }

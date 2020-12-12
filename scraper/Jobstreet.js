@@ -1,9 +1,8 @@
 const request = require('../helper/Request')
+const JobMap = require('../helper/JobMap')
 const mongoDB = require('../models/Mongo')
-const mongoose = require('mongoose')
-const ObjectId = mongoose.Types.ObjectId
 const jobsController = require('../controllers/Jobs')
-const APISchema = require('./JobStreetAPISchema')
+const APISchema = require('./APISchema/JobStreetAPISchema')
 const moment = require('moment')
 
 const scrapeJobDetails = async (jobsId) => {
@@ -62,32 +61,6 @@ const scrapeJobs = async () => {
 
 }
 
-const jobCategoryMap = async () => {
-    let jobCategoryModel = await mongoDB.model('job_category')
-    let jobCategory = await jobCategoryModel.find({})
-        jobCategory = jobCategory.map(category => new Object({code: category.search_id.jobstreet, categoryId: category._id}))
-    
-    let jobCategoryMap = new Map()
-    for( let category of jobCategory ){
-        for( let code of category.code  ){
-            jobCategoryMap.set(code, ObjectId(category.categoryId))
-        }
-    }
-
-    return jobCategoryMap
-}
-
-const jobLocationMap = async () => {
-    let jobLocationModel = await mongoDB.model('job_location')
-    let jobLocation = await jobLocationModel.find({})
-        jobLocation = jobLocation.map(location => new Object({code: location.search_id.jobstreet, id: location._id}))
-    let locationMap = new Map()
-    for( let location of jobLocation ){
-        locationMap.set(location.code, ObjectId(location.id))
-    }
-    return locationMap
-}
-
 const filterJobCategory = async (jobCategory, categoryMap) => {
     if( jobCategory.length < 1 || !jobCategory instanceof Array ) return false
     if( !categoryMap ) return false
@@ -119,8 +92,10 @@ const filterJobs = async (jobs) => {
     console.log(`[INFO] Jobstreet - Job Filtering: filtering job catalogue ...`)
 
     let filteredJobs = []
-    let categoryMap = await jobCategoryMap()
-    let locationMap = await jobLocationMap()
+    let categoryMap = await JobMap.category()
+        categoryMap = categoryMap.jobstreet
+    let locationMap = await JobMap.location()
+        locationMap = locationMap.jobstreet
     let jobType = new Map()
 
     jobType.set('Penuh Waktu', 'full time')
@@ -185,9 +160,11 @@ exports.getJobs = async () => {
     const jobs = await scrapeJobDetails(jobsId)
     const filteredJobs = await filterJobs(jobs)
     try{
+        console.log(`[INFO] Jobstreet - Database Insert : Inserting ${filteredJobs.length} jobs to database`)
         const jobCatalogueModel = await mongoDB.model('job_catalogue')
         await jobCatalogueModel.deleteMany({job_source: 'jobstreet'})
         await jobCatalogueModel.insertMany(filteredJobs)
+        console.log(`[INFO] Jobstreet scraping successfuly`)
     }catch(exception){
         console.log(`[ERROR] Jobstreet - Insert Database : there's an error inserting data to databse. ${exception.message}`)
     }

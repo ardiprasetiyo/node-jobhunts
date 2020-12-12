@@ -29,16 +29,16 @@ const registeredCollections = [
             type: {type: String, default: null},
             category: ObjectId,
             is_vocational: {type: Boolean, required: true},
-            salary: {type: Object, required: true},
-            qualification: {type: String, required: true},
-            description: {type: String, required: true},
+            salary: {type: Object},
+            qualification: {type: String},
+            description: {type: String},
             job_source: {type: String, required: true},
             job_url: {type: String, required: true},
             company: {type: Object, required: true},
-            tags: {type: Array, required: true},
+            tags: {type: Array},
             location: ObjectId,
-            posted_date: {type: Date, required: true},
-            expired_date: {type: Date, required: true}
+            posted_date: {type: Date, default: null},
+            expired_date: {type: Date, default: null}
         })
     }
 ]
