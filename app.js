@@ -7,7 +7,7 @@ const APIRoutes = require('./routes/api')
 
 const app = express();
 
-const mongoDB = require('./models/mongo');
+const mongoDB = require('./models/Mongo');
 
 (async() => {
     console.log(`[INFO] MongoDB Connecting to database ...`)

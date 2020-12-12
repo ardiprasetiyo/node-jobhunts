@@ -26,7 +26,7 @@ const registeredCollections = [
         name: 'job_catalogue',
         schema: new Schema({
             title: {type: String, required: true},
-            type: {type: String, required: true},
+            type: {type: String, default: null},
             category: ObjectId,
             is_vocational: {type: Boolean, required: true},
             salary: {type: Object, required: true},
@@ -35,7 +35,10 @@ const registeredCollections = [
             job_source: {type: String, required: true},
             job_url: {type: String, required: true},
             company: {type: Object, required: true},
-            location: ObjectId
+            tags: {type: Array, required: true},
+            location: ObjectId,
+            posted_date: {type: Date, required: true},
+            expired_date: {type: Date, required: true}
         })
     }
 ]

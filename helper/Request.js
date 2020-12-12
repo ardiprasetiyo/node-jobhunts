@@ -46,21 +46,32 @@ const request = async ({...args}) => {
             return resultObject
         }
 
-        // Verbose 
-        if( response.data.data.jobDetail ) console.log(`[INFO] Jobstreet : found a job, ${response.data.data.jobDetail.header.jobTitle}`)
+        // Jobstreet Scrapper Verbose
+        if( response.data ){
+            if( response.data.data ){
+                if( response.data.data.jobDetail ){
+                    console.log(`[INFO] Jobstreet : found a job, ${response.data.data.jobDetail.header.jobTitle}`)
+                }
+            }
+        }
 
         resultObject.data = response.data
         return resultObject
     }catch(exception){
         resultObject.errors.status = true;
         resultObject.errors.reason = exception.message
-        let exceptJSON = exception.toJSON()
-        resultObject.errors.request_config = {
-            url: exceptJSON.config.url,
-            method: exceptJSON.config.method,
-            data: exceptJSON.config.data,
-            headers: exceptJSON.config.headers
+
+        if( exception.hasOwnProperty('toJSON') ){
+            let exceptJSON = exception.toJSON()
+        
+            resultObject.errors.request_config = {
+                url: exceptJSON.config.url,
+                method: exceptJSON.config.method,
+                data: exceptJSON.config.data,
+                headers: exceptJSON.config.headers
+            }
         }
+
         return resultObject
     }
 }

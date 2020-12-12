@@ -1,10 +1,10 @@
 const request = require('../helper/Request')
-const mongoDB = require('../models/mongo')
+const mongoDB = require('../models/Mongo')
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId
 const jobsController = require('../controllers/Jobs')
 const APISchema = require('./JobStreetAPISchema')
-const fs = require('fs')
+const moment = require('moment')
 
 const scrapeJobDetails = async (jobsId) => {
     console.log(`[INFO] Jobstreet - Scrape Detail Job : Scraping jobs detail info ...`)
@@ -121,40 +121,54 @@ const filterJobs = async (jobs) => {
     let filteredJobs = []
     let categoryMap = await jobCategoryMap()
     let locationMap = await jobLocationMap()
+    let jobType = new Map()
+
+    jobType.set('Penuh Waktu', 'full time')
+    jobType.set('Paruh Waktu', 'part time')
+    jobType.set('Kontrak', 'contractual')
+    jobType.set('Temporer', 'freelance')
 
     for( job of jobs ){
         try{
-            let jobCatalogue = jobsController.jobCatalogueSchema()
             let { pageUrl, header, companyDetail, jobDetail, location } = job
             let { salary, logoUrls, jobTitle, company } = header
             let { companyOverview, companyWebsite } = companyDetail
             let { jobDescription, jobRequirement } = jobDetail
-            
-            jobCatalogue.title = jobTitle
-            jobCatalogue.type = jobRequirement.employmentType
-            jobCatalogue.salary.min = Number.parseInt(salary.min)
-            jobCatalogue.salary.max = Number.parseInt(salary.max)
-            jobCatalogue.salary.type = salary.type
-            jobCatalogue.salary.currency = salary.currency
-            jobCatalogue.qualification = jobRequirement.qualification
-            jobCatalogue.description = jobDescription.html
-            jobCatalogue.job_source = 'jobstreet'
-            jobCatalogue.job_url = pageUrl
-            jobCatalogue.company.name = company.name
-            jobCatalogue.company.description = companyOverview.html
-            jobCatalogue.company.website = companyWebsite
-            jobCatalogue.company.logo = logoUrls.normal
 
-            let isVocational =  jobCatalogue.qualification.toUpperCase().search('SMA') > -1 ||
-                                jobCatalogue.qualification.toUpperCase().search('SMK') > -1 ||
-                                jobCatalogue.qualification.toUpperCase().search('SMU') > -1 ||
-                                jobCatalogue.description.toUpperCase().search('SMA') > -1 ||
-                                jobCatalogue.description.toUpperCase().search('SMK') > -1 ||
-                                jobCatalogue.description.toUpperCase().search('SMU') > -1
+            let isVocational =  jobRequirement.qualification.toUpperCase().search('SMA') > -1 ||
+                                jobRequirement.qualification.toUpperCase().search('SMK') > -1 ||
+                                jobRequirement.qualification.toUpperCase().search('SMU') > -1 ||
+                                jobDescription.html.toUpperCase().search('SMA') > -1 ||
+                                jobDescription.html.toUpperCase().search('SMK') > -1 ||
+                                jobDescription.html.toUpperCase().search('SMU') > -1
+
+             let jobCatalogue = jobsController.jobCatalogueSchema({
+                title: jobTitle,
+                type: jobType.get(jobRequirement.employmentType) || null,
+                salary: {
+                    min: Number.parseInt(salary.min),
+                    max: Number.parseInt(salary.max),
+                    type: salary.type,
+                    currency: salary.currency
+                },
+                qualification: jobRequirement.qualification,
+                description: jobDescription.html,
+                job_source: 'jobstreet',
+                job_url: pageUrl,
+                company:{
+                    name: company.name,
+                    description: companyOverview.html,
+                    website: companyWebsite,
+                    logo: logoUrls.normal
+                },
+                is_vocational: isVocational,
+                category: await filterJobCategory(jobRequirement.jobFunctionValue, categoryMap) || null,
+                location: await filterJobLocation(location, locationMap) || null,
+                tags: jobRequirement.jobFunctionValue.map(tag => tag.name),
+                posted_date: moment(header.postedAt).toISOString(),
+                expired_date: moment(jobRequirement.closingDate).toISOString(),
+            })
             
-            jobCatalogue.is_vocational = isVocational
-            jobCatalogue.category = await filterJobCategory(jobRequirement.jobFunctionValue, categoryMap) || null
-            jobCatalogue.location = await filterJobLocation(location, locationMap) || null
             filteredJobs.push(jobCatalogue)
 
         }catch(exception){
@@ -167,14 +181,16 @@ const filterJobs = async (jobs) => {
 
 
 exports.getJobs = async () => {
-    const jobsCatalogue = await JSON.parse(await fs.readFileSync('jobs.json'))
     const jobsId = await scrapeJobs()
     const jobs = await scrapeJobDetails(jobsId)
     const filteredJobs = await filterJobs(jobs)
     try{
         const jobCatalogueModel = await mongoDB.model('job_catalogue')
-        await jobCatalogueModel.insertMany(jobsCatalogue)
+        await jobCatalogueModel.deleteMany({job_source: 'jobstreet'})
+        await jobCatalogueModel.insertMany(filteredJobs)
     }catch(exception){
         console.log(`[ERROR] Jobstreet - Insert Database : there's an error inserting data to databse. ${exception.message}`)
     }
+
+    console.log(`[INFO] Jobstreet Scraping Done ...`)
 }

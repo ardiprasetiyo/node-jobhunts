@@ -1,11 +1,12 @@
 const jobstreetScrapper = require('../scraper/Jobstreet')
+const kalibrrScrapper = require('../scraper/Kalibrr')
 
 const responseObject = (statusCode=null, message=null, data=null, reason=null) => ({statusCode: statusCode, message: message, data: data, reason: reason})
-
+const jobSourceList = ['JOBSTREET', 'KALIBRR']
 
 const filterValidJobSources = (jobSources) => {
     if( !Array.isArray(jobSources) ) return false
-    return jobSources.filter(source => ['JOBSTREET'].includes(source.toUpperCase()))
+    return jobSources.filter(source => jobSourceList.includes(source.toUpperCase())).map(source => source.toUpperCase())
 }
 
 const stringToArray = (arrayString='') => {
@@ -13,8 +14,8 @@ const stringToArray = (arrayString='') => {
     try{ return JSON.parse(arrayString) }catch{ return false }
 }
 
-exports.jobCatalogueSchema = () => {
-    return new Object({
+exports.jobCatalogueSchema = ({...args}) => {
+    let template = new Object({
         title: '',
         type: '',
         category: null,
@@ -35,8 +36,19 @@ exports.jobCatalogueSchema = () => {
             website: '',
             logo: '',
         },
-        location: ''
+        tags: [],
+        location: '',
+        posted_date: '',
+        expired_date: ''
     })
+    
+    for( let key of Object.keys(args) ){
+        if( Object.keys(template).includes(key) ){
+            template[key] = args[key]
+        }
+    }
+
+    return template
 }
 
 exports.updateJobCatalogue = async (req, res) => {
@@ -47,9 +59,13 @@ exports.updateJobCatalogue = async (req, res) => {
 
     jobSources = filterValidJobSources(jobSources)
     let jobCatalogue = []
-    
+
     if( jobSources.includes('JOBSTREET') ){
         jobCatalogue.push(jobstreetScrapper.getJobs())
+    }
+
+    if( jobSources.includes('KALIBRR') ){
+        jobCatalogue.push(kalibrrScrapper.getJobs())
     }
     
     jobCatalogue = await Promise.all(jobCatalogue)
