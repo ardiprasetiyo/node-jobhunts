@@ -182,6 +182,13 @@
             </ul>
           </nav>
         </div>
+
+        <div class="col-12 col-lg-12 col-sm-12 col-md-12 text-center mt-4 mb-2">
+          <span v-if="!isLoading"
+            >Was builded when 😴 <br />
+            by <b>Ardi Hari Prasetiyo</b></span
+          >
+        </div>
       </div>
     </div>
   </div>
