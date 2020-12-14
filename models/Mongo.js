@@ -62,11 +62,14 @@ const getCollection = (collectionName) => {
 
 
 exports.connect = async () => {
-    try{
-        await mongo.connect(config.url, {...config.params})
-        console.log(`[INFO] MongoDB connected`)
-    }catch(exception){
-        console.log(`[INFO] MongoDB doesn't connect to database with exception: ${exception.message}`)
+    while( true ){
+        try{
+            await mongo.connect(config.url, {...config.params})
+            console.log(`[INFO] MongoDB connected`)
+            break;
+        }catch(exception){
+            console.log(`[ERROR] MongoDB doesn't connect to database with exception: ${exception.message}. Retrying ...`)
+        }
     }
 }
 
