@@ -15,7 +15,7 @@ export default new Vuex.Store({
     setCurrentJobs(state, payload){
       state.currentJobs.jobs = []
       state.totalJobs = 0
-      
+
       const jobs = payload.data[0]
       const totalJobs = jobs.count.length > 0 ? jobs.count[0].total_jobs : 0
 

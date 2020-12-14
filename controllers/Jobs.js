@@ -181,7 +181,7 @@ const getJobCatalogue = async({...args}) => {
                 search_keywords: 0
             }
         }
-    })
+    })  
 
     try{
         const jobs = await jobCatalogueModel.aggregate([aggregateData, {

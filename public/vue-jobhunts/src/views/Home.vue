@@ -31,6 +31,7 @@
                 <div class="col-12 mt-3">
                   <p
                     class="m-0"
+                    v-if="!isLoading"
                     v-html="
                       getJobs.totalJobs > 0
                         ? `<b>${getJobs.totalJobs}</b> pekerjaan
@@ -43,7 +44,16 @@
             </div>
           </div>
 
-          <div class="row mt-2">
+          <div class="row mt-2 mb-2" v-if="isLoading">
+            <div class="col-12 col-lg-12 col-sm-12 col-md-12">
+              <h3 class="text-center">Tunggu Sebentar Napa ...</h3>
+              <p class="text-center">
+                Ikan hiu makan udang, tunggu sebentar dang
+              </p>
+            </div>
+          </div>
+
+          <div class="row mt-2" v-if="!isLoading">
             <div class="col-12 col-lg-12 col-md-12 col-sm-12">
               <div class="row mt-2 mb-4">
                 <div
@@ -130,7 +140,7 @@
           </div>
         </div>
 
-        <div class="col-12" v-if="getJobs.totalJobs > 0">
+        <div class="col-12" v-if="getJobs.totalJobs > 0 && !isLoading">
           <nav aria-label="...">
             <ul class="pagination justify-content-center">
               <li class="page-item">
@@ -190,17 +200,20 @@ export default {
     return {
       activePage: 1,
       querySearch: "",
+      isLoading: true,
     };
   },
   methods: {
-    searchQuery(ev) {
+    async searchQuery(ev) {
       let query = this.$refs.searchbar.value;
       this.querySearch = query;
       this.activePage = 1;
-      this.$store.dispatch("getJobs", {
+      this.isLoading = true;
+      await this.$store.dispatch("getJobs", {
         searchQuery: this.querySearch,
         page: this.activePage,
       });
+      this.isLoading = false;
     },
 
     toPage(pageNum) {
@@ -306,8 +319,9 @@ export default {
       return pages;
     },
   },
-  created() {
-    this.$store.dispatch("getJobs");
+  async created() {
+    await this.$store.dispatch("getJobs");
+    this.isLoading = false;
   },
 };
 </script>
