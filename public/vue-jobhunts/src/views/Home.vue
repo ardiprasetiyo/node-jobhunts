@@ -216,17 +216,18 @@ export default {
       this.isLoading = false;
     },
 
-    toPage(pageNum) {
+    async toPage(pageNum) {
       let totalJobs = this.$store.state.currentJobs.totalJobs;
       if (pageNum > Math.ceil(totalJobs / 12) || pageNum == 0) return;
 
       this.activePage = pageNum;
-      this.$store.dispatch("getJobs", {
+      window.scrollTo(0, 0);
+      this.isLoading = true;
+      await this.$store.dispatch("getJobs", {
         searchQuery: this.querySearch,
         page: this.activePage,
       });
-
-      window.scrollTo(0, 0);
+      this.isLoading = false;
     },
 
     showDetailJob(jobId) {
