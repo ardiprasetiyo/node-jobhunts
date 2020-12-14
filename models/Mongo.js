@@ -50,7 +50,7 @@ const config = new Object({
         useFindAndModify: false,
         useCreateIndex: true
     },
-    url: 'mongodb://127.0.0.1:27017/jobhunts'
+    url: 'mongodb://jobhunts:jobhunts123@jobhunts-cluster01-shard-00-00.0jvuw.mongodb.net:27017,jobhunts-cluster01-shard-00-01.0jvuw.mongodb.net:27017,jobhunts-cluster01-shard-00-02.0jvuw.mongodb.net:27017/jobhunts?ssl=true&replicaSet=atlas-gujk71-shard-0&authSource=admin&retryWrites=true&w=majority'
 })
 
 const getCollection = (collectionName) => {
