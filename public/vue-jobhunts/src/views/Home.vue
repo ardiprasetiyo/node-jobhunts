@@ -227,15 +227,20 @@
       </div>
     </section>
     <section>
-      <div class="row mt-4 mb-4">
-        <div class="col-12">
-          <span class="app-text-subheader text-opensans text-center"
-            >Made in
-            <a href="https://www.instagram.com/nerdstrtype/" target="_blank"
-              >@nerdstrtype</a
+      <div class="container">
+        <div class="row mt-4 mb-4">
+          <div class="col-12 text-center">
+            <span class="app-text-subheader text-opensans d-block"
+              >Brought to you by
+              <a href="https://www.instagram.com/nerdstrtype/" target="_blank"
+                >@nerdstrtype</a
+              >
+              brain</span
             >
-            brain</span
-          >
+            <span class="text-center text-opensans app-text-subheader"
+              >This is my one week open source project</span
+            >
+          </div>
         </div>
       </div>
     </section>
