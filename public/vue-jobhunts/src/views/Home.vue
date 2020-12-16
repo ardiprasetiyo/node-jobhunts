@@ -168,12 +168,12 @@
 
     <section class="app-pagination mt-4 mb-4" v-if="!isLoading">
       <div class="container">
-        <div class="col-4 offset-4">
+        <div class="col-lg-4 offset-lg-4 col-12">
           <div class="card app-card">
             <div class="card-body">
               <div class="row">
                 <div
-                  class="col-4 text-center my-auto app-text-subheader text-center"
+                  class="col-4 col-lg-4 text-center my-auto app-text-subheader text-center"
                   @click="moveToPage(activePage - 1)"
                 >
                   <a
@@ -185,7 +185,7 @@
                     >Kembali</a
                   >
                 </div>
-                <div class="col-4 text-center">
+                <div class="col-4 col-lg-4 text-center">
                   <select
                     name="pagination"
                     id=""
@@ -206,7 +206,7 @@
                   </select>
                 </div>
                 <div
-                  class="col-4 text-center my-auto app-text-subheader text-center"
+                  class="col-4 col-lg-4 text-center my-auto app-text-subheader text-center"
                 >
                   <a
                     href="#!"
@@ -223,6 +223,19 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="row mt-4 mb-4">
+        <div class="col-12">
+          <span class="app-text-subheader text-opensans text-center"
+            >Made in
+            <a href="https://www.instagram.com/nerdstrtype/" target="_blank"
+              >@nerdstrtype</a
+            >
+            brain</span
+          >
         </div>
       </div>
     </section>
