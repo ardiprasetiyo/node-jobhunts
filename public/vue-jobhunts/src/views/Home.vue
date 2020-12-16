@@ -1,205 +1,236 @@
 <template>
-  <div class="home p-4">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12 col-md-12 col-12">
-          <div class="row">
-            <div class="col-12 col-lg-12">
-              <h1 class="font-weight-bolder">Joobhunts</h1>
-              <p class="font-weight-bolder">
-                Cari Qerja Gak Sesulit Cari Jodoh
-              </p>
-              <div class="row">
-                <div class="col-12 px-2">
-                  <div class="input-grouping">
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Masukan kata kunci pekerjaan"
-                      ref="searchbar"
-                      @keyup.enter="searchQuery"
-                    />
-                    <div class="icon-wrapper">
-                      <i
-                        class="material-icons icon icon-info"
-                        @click="searchQuery"
-                        >search</i
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 mt-3">
-                  <p
-                    class="m-0"
-                    v-if="!isLoading"
-                    v-html="
-                      getJobs.totalJobs > 0
-                        ? `<b>${getJobs.totalJobs}</b> pekerjaan
-                    ditemukan`
-                        : `tidak ada pekerjaan`
-                    "
-                  ></p>
-                </div>
-              </div>
-            </div>
+  <div class="home">
+    <section class="app-navbar" style="z-index: ">
+      <div class="fixed-top w-100 bg-white p-2 app-navbar-wrapper">
+        <div class="row">
+          <div class="col-6 d-block my-auto">
+            <h1 class="app-navbar-title text-left text-poppins">Joobhunts</h1>
           </div>
-
-          <div class="row mt-2 mb-2" v-if="isLoading">
-            <div class="col-12 col-lg-12 col-sm-12 col-md-12">
-              <h3 class="text-center">Tunggu Sebentar Napa ...</h3>
-              <p class="text-center">
-                Ikan hiu makan udang, tunggu sebentar dang
-              </p>
-            </div>
+          <div class="col-6">
+            <img
+              src="@/assets/icons/bookmark-active-icon.svg"
+              class="app-icon d-block my-auto float-right"
+            />
           </div>
-
-          <div class="row mt-2" v-if="!isLoading">
-            <div class="col-12 col-lg-12 col-md-12 col-sm-12">
-              <div class="row mt-2 mb-4">
-                <div
-                  class="col-12 col-lg-4 mb-4"
-                  v-for="(job, jobIndex) in getJobs.jobs"
-                  @click="showDetailJob(job._id)"
-                  :key="jobIndex"
-                >
-                  <div class="card">
-                    <div class="card-body">
-                      <div class="row">
-                        <div
-                          class="col-3 col-lg-3 col-md-2 col-sm-2 col-xs-2 mb-3"
-                        >
-                          <img
-                            :src="job.company.logo"
-                            alt=""
-                            class="img img-fluid rounded-circle mx-auto d-block"
-                          />
-                        </div>
-                        <div class="col-8">
-                          <h5>{{ job.title }}</h5>
-                          <p>{{ job.company.name }}</p>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-12">
-                          <h6>
-                            {{
-                              job.type
-                                .split(" ")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                )
-                                .join(" ")
-                            }}
-
-                            {{
-                              job.location_detail.length > 0
-                                ? `- ${job.location_detail[0].name}`
-                                : ""
-                            }}
-                          </h6>
-                          <h6>
-                            {{
-                              job.salary.min && job.salary.max
-                                ? `IDR ${new Intl.NumberFormat().format(
-                                    job.salary.min
-                                  )} - ${new Intl.NumberFormat().format(
-                                    job.salary.max
-                                  )}`
-                                : ``
-                            }}
-                          </h6>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="col-12 pt-2 pb-2">
-                          <p
-                            v-html="job.description.substr(0, 100) + '...'"
-                          ></p>
-                        </div>
-
-                        <div class="col-12">
-                          <span
-                            v-if="job.is_vocational"
-                            class="badge badge-success mr-2 p-2 mb-2"
-                            >SMA/SMK</span
-                          >
-                          <span
-                            class="badge badge-info mr-2 p-2 mb-2"
-                            v-for="(tag, tagIndex) in job.tags"
-                            :key="tagIndex"
-                            >{{ tag }}</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-12" v-if="getJobs.totalJobs > 0 && !isLoading">
-          <nav aria-label="...">
-            <ul class="pagination justify-content-center">
-              <li class="page-item">
-                <a
-                  class="page-link"
-                  href="#!"
-                  tabindex="-1"
-                  @click="
-                    toPage(
-                      getPagination.filter((page) => page.isActive)[0].pageNum -
-                        1
-                    )
-                  "
-                  >Mundur</a
-                >
-              </li>
-              <li
-                v-for="(page, pageIndex) of getPagination"
-                :key="pageIndex"
-                :class="{ 'page-item': true, active: page.isActive }"
-              >
-                <a class="page-link" href="#!" @click="toPage(page.pageNum)">{{
-                  page.pageNum
-                }}</a>
-              </li>
-              <li class="page-item">
-                <a
-                  class="page-link"
-                  href="#!"
-                  @click="
-                    toPage(
-                      getPagination.filter((page) => page.isActive)[0].pageNum +
-                        1
-                    )
-                  "
-                  >Maju</a
-                >
-              </li>
-            </ul>
-          </nav>
-        </div>
-
-        <div class="col-12 col-lg-12 col-sm-12 col-md-12 text-center mt-4 mb-2">
-          <span v-if="!isLoading"
-            >Was builded when 😴 <br />
-            by <b>Ardi Hari Prasetiyo</b></span
-          >
         </div>
       </div>
-    </div>
+    </section>
+
+    <section class="app-search mb-4">
+      <div class="container">
+        <div class="card app-card">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 mb-2">
+                <h1 class="app-text-header text-poppins">Cari Pekerjaan</h1>
+              </div>
+              <div class="col-12 mb-3">
+                <div class="app-input-group-icon d-relative">
+                  <div class="app-group-input">
+                    <input
+                      type="text"
+                      class="form-control app-input app-input-rounded"
+                      placeholder="Masukan kata kunci pekerjaan"
+                      v-model="querySearch"
+                      @keyup.enter="updateData()"
+                    />
+                  </div>
+                  <div class="app-group-icon" @click="updateData()">
+                    <img src="@/assets/icons/search-icon.svg" class="icon" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="d-inline-block float-center">
+                  <input
+                    type="checkbox"
+                    id="isVocational"
+                    class="ml-1"
+                    ref="vocationalcheckbox"
+                    @click="setIsVocational"
+                  />
+                  <label
+                    for="isVocational"
+                    class="pl-3 app-text-subheader text-opensans"
+                    >Hanya tampilkan pekerjaan untuk SMA/SMK</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-loading" v-if="isLoading">
+      <h5 class="text-center text-poppins">Mengambil Data</h5>
+      <p class="text-center text-opensans">
+        Ini namanya loading, ditunggu aja ...
+      </p>
+    </section>
+
+    <section class="app-total-job" v-if="!isLoading">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <h1
+              class="app-text-subheader text-poppins ml-3"
+              v-html="
+                getTotalJobs > 0
+                  ? `<b>${getTotalJobs}</b> Pekerjaan ditemukan
+                  `
+                  : 'Pekerjaan tidak ditemukan'
+              "
+            ></h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-jobs-content" v-if="!isLoading">
+      <div class="container">
+        <div class="row">
+          <div
+            class="col-12 col-lg-6 mt-2 mb-2"
+            v-for="(job, jobIndex) of getJobs"
+            :key="jobIndex"
+          >
+            <div class="app-card card" @click="redirectJob(job.job_url)">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12 col-lg-12 mt-2 mb-2">
+                    <span class="app-pils pils-bg-info mx-2 text-opensans">{{
+                      capitalizeEachWord(job.type)
+                    }}</span>
+                    <span
+                      class="app-pils pils-bg-success mx-2 text-opensans"
+                      v-if="job.is_vocational"
+                      >SMA/SMK</span
+                    >
+                  </div>
+                  <div class="col-12 col-lg-12 mt-2">
+                    <div class="row">
+                      <div class="col-4 col-lg-4 my-auto">
+                        <img
+                          :src="job.company.logo"
+                          alt=""
+                          class="img img-fluid d-block mx-auto my-auto"
+                          width="92px"
+                        />
+                      </div>
+                      <div class="col-8 col-lg-8 my-auto">
+                        <h1 class="app-text-header-larger text-poppins">
+                          {{ job.title }}
+                        </h1>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-8 col-lg-8 offset-lg-4 offset-4">
+                        <h1 class="app-text-subheader text-opensans">
+                          {{ job.company.name }}
+                        </h1>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-8 col-lg-8 offset-lg-4 offset-4">
+                        <div class="row">
+                          <div class="col-12 col-lg-12 mb-3">
+                            <h1 class="app-text-subheader text-opensans">
+                              Bandung
+                            </h1>
+                          </div>
+                          <div class="col-12 col-lg-12">
+                            <h1
+                              class="app-text-subheader font-weight-bold text-opensans"
+                            >
+                              {{
+                                salaryParse(
+                                  job.salary.min,
+                                  job.salary.max,
+                                  job.salary.type
+                                )
+                              }}
+                            </h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-pagination mt-4 mb-4" v-if="!isLoading">
+      <div class="container">
+        <div class="col-4 offset-4">
+          <div class="card app-card">
+            <div class="card-body">
+              <div class="row">
+                <div
+                  class="col-4 text-center my-auto app-text-subheader text-center"
+                  @click="moveToPage(activePage - 1)"
+                >
+                  <a
+                    href="#!"
+                    :class="{
+                      btn: true,
+                      'app-text-disabled': activePage - 1 == 0,
+                    }"
+                    >Kembali</a
+                  >
+                </div>
+                <div class="col-4 text-center">
+                  <select
+                    name="pagination"
+                    id=""
+                    class="form-control"
+                    ref="pagination"
+                    @change="jumpToPage()"
+                  >
+                    <option
+                      :value="numPage"
+                      :selected="numPage == activePage"
+                      v-for="numPage of Math.ceil(
+                        getTotalJobs / this.jobPerPage
+                      )"
+                      :key="numPage"
+                    >
+                      {{ numPage }}
+                    </option>
+                  </select>
+                </div>
+                <div
+                  class="col-4 text-center my-auto app-text-subheader text-center"
+                >
+                  <a
+                    href="#!"
+                    :class="{
+                      btn: true,
+                      'app-text-disabled':
+                        activePage + 1 >
+                        Math.ceil(getTotalJobs / this.jobPerPage),
+                    }"
+                    @click="moveToPage(activePage + 1)"
+                    >Lanjut</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
-import VueSwal from "vue-sweetalert2";
-import "sweetalert2/dist/sweetalert2.min.css";
-
-Vue.use(VueSwal);
 
 export default {
   name: "Home",
@@ -207,127 +238,101 @@ export default {
     return {
       activePage: 1,
       querySearch: "",
-      isLoading: true,
+      jobPerPage: 30,
+      isVocational: false,
+      isLoading: false,
     };
   },
   methods: {
-    async searchQuery(ev) {
-      let query = this.$refs.searchbar.value;
-      this.querySearch = query;
+    setIsVocational() {
+      this.isVocational = this.$refs.vocationalcheckbox.checked;
       this.activePage = 1;
+      this.updateData();
+    },
+
+    async updateData() {
       this.isLoading = true;
       await this.$store.dispatch("getJobs", {
         searchQuery: this.querySearch,
         page: this.activePage,
+        isVocational: this.isVocational,
       });
       this.isLoading = false;
     },
 
-    async toPage(pageNum) {
-      let totalJobs = this.$store.state.currentJobs.totalJobs;
-      if (pageNum > Math.ceil(totalJobs / 12) || pageNum == 0) return;
-
-      this.activePage = pageNum;
-      window.scrollTo(0, 0);
-      this.isLoading = true;
-      await this.$store.dispatch("getJobs", {
-        searchQuery: this.querySearch,
-        page: this.activePage,
-      });
-      this.isLoading = false;
+    capitalizeEachWord(text) {
+      let words = text.split(" ");
+      words = words.map((word) => word[0].toUpperCase() + word.slice(1));
+      return words.join(" ");
     },
 
-    showDetailJob(jobId) {
-      let jobs = this.getJobs.jobs;
-      let job = jobs.filter((job) => job._id == jobId);
-      let jobDetail = job[0];
+    redirectJob(url) {
+      window.open(url);
+    },
+    moveToPage(numPage) {
+      console.log(numPage);
+      if (
+        numPage == 0 ||
+        numPage >
+          Math.ceil(this.$store.state.currentJobs.totalJobs / this.jobPerPage)
+      )
+        return;
+      this.activePage = numPage;
+      this.updateData();
+    },
+    jumpToPage() {
+      let numPage = Number.parseInt(this.$refs.pagination.value);
+      this.activePage = numPage;
+      this.moveToPage(numPage);
+    },
+    salaryParse(minSalary, maxSalary, salaryType) {
+      if (!minSalary || !maxSalary) {
+        return "Lamar untuk melihat gaji";
+      }
 
-      let jobTitle = jobDetail.title;
-      let jobDescription = jobDetail.description;
-      let jobType = jobDetail.type;
-      let jobVocational = jobDetail.is_vocational;
-      let jobSalaryRange =
-        jobDetail.salary.min && jobDetail.salary.max
-          ? `IDR ${new Intl.NumberFormat().format(jobDetail.salary.min)} 
-            - ${new Intl.NumberFormat().format(jobDetail.salary.max)}`
-          : ``;
-      let vocationalCategory =
-        jobDetail.category_detail.length > 0
-          ? jobDetail.category_detail[0].name
-          : ``;
-      let jobLocation =
-        jobDetail.location_detail.length > 0
-          ? jobDetail.location_detail[0].name
-          : ``;
-      let companyName = jobDetail.company.name;
+      minSalary = String(minSalary);
+      maxSalary = String(maxSalary);
 
-      this.$swal
-        .fire({
-          html: `
-          <div class="row">
-            <div class="col-12 col-lg-12 col-md-12 col-sm-12">
-              <h3 class="text-poppins mb-4">${jobTitle}</h3>
-              <h6 class="text-opensans">${jobSalaryRange}</h6>
-              <p class="text-opensans" style="font-size: 16px">${companyName} <br> ${jobType} ${
-            jobLocation ? `- ${jobLocation}` : ``
-          }</p>
-              <p class="text-opensans mb-4" style="font-size: 16px">${
-                jobVocational && vocationalCategory
-                  ? `Direkomendasikan untuk jurusan <b>` +
-                    vocationalCategory +
-                    `</b>`
-                  : ``
-              }</p>
-              <div class="row">
-                <div class="col-12 col-lg-12 col-md-12 col-sm-12" style="font-size: 16px">
-                  ${jobDescription}
-                </div>
-              </div>
+      minSalary =
+        minSalary.length > 6
+          ? `${minSalary.slice(0, minSalary.length - 6)}`
+          : `${minSalary.slice(0, minSalary.length - 3)} Ribu `;
 
-            </div>
-          </div>
-        `,
-          showCloseButton: true,
-          showCancelButton: true,
-          showConfirmButton: true,
-          confirmButtonText: `Lamar Sekarang Di ${
-            jobDetail.job_source.split("")[0].toUpperCase() +
-            jobDetail.job_source.slice(1)
-          }`,
-          cancelButtonText: "Kembali",
-          width: "100%",
-        })
-        .then((data) => {
-          if (data.isConfirmed) window.open(jobDetail.job_url, "_blank");
-        });
+      maxSalary =
+        maxSalary.length > 6
+          ? `${maxSalary.slice(0, maxSalary.length - 6)} Juta`
+          : `${maxSalary.slice(0, maxSalary.length - 3)} Ribu`;
+
+      salaryType = salaryType.toLowerCase();
+      if (salaryType == "monthly") {
+        salaryType = "Bulan";
+      } else if (salaryType == "yearly") {
+        salaryType = "Tahun";
+      } else {
+        salaryType = null;
+      }
+
+      return `IDR. ${minSalary} - ${maxSalary} ${
+        salaryType ? "/ " + salaryType : ""
+      }`;
     },
   },
   computed: {
     getJobs() {
-      return this.$store.state.currentJobs;
+      return this.$store.state.currentJobs.jobs;
+    },
+    getTotalJobs() {
+      return this.$store.state.currentJobs.totalJobs;
     },
     getPagination() {
-      let page = this.activePage;
       let totalJobs = this.$store.state.currentJobs.totalJobs;
-      let pages = [];
-
-      if (page - 1 == 0) ++page;
-      if (page + 1 == Math.ceil(totalJobs / 12) + 1) --page;
-
-      pages.push({ pageNum: page - 1 });
-      pages.push({ pageNum: page });
-      pages.push({ pageNum: page + 1 });
-
-      pages.map((page) =>
-        page.pageNum == this.activePage
-          ? (page.isActive = true)
-          : (page.isActive = false)
-      );
-
-      return pages;
+      let totalPages = Math.ceil(totalJobs / 12);
+      let currentPage = this.activePage;
+      let pageLeft = totalPages - currentPage;
     },
   },
-  async created() {
+  async mounted() {
+    this.isLoading = true;
     await this.$store.dispatch("getJobs");
     this.isLoading = false;
   },
@@ -335,10 +340,6 @@ export default {
 </script>
 
 <style scoped>
-.card {
-  box-shadow: 0px 8px 15px -10px #696b6d73;
-}
-
 .text-poppins {
   font-family: "Poppins", sans-serif;
 }
@@ -347,46 +348,121 @@ export default {
   font-family: "Open Sans", sans-serif;
 }
 
-p {
-  font-size: 14px !important;
+.app-navbar-wrapper {
+  padding: 20px !important;
 }
-.input-grouping > .icon-wrapper {
+
+.app-navbar-title {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 28px;
+  color: #414d68;
+  margin: 0;
+}
+
+.app-icon {
+  width: 36px;
+}
+
+.app-card {
+  background: #ffffff;
+  box-shadow: 0px 3px 15px rgba(233, 230, 230, 0.5);
+  border-radius: 11px;
+}
+
+.app-search {
+  padding-top: 98px;
+}
+
+.app-text-disabled {
+  color: #a9a9a9;
+}
+
+.app-text-header {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 26px;
+  color: #414d68;
+}
+
+.app-text-header-larger {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 26px;
+  color: #414d68;
+}
+
+.app-text-subheader {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 16px;
+  color: #666f84;
+}
+
+.app-input-rounded {
+  border-radius: 20px;
+}
+
+.app-input {
+  background: #fbfbfb;
+  border: 0.8px solid rgba(65, 77, 104, 0.18);
+  box-sizing: border-box;
+  padding: 10px;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  color: #8f94a0;
+}
+
+.app-input-group-icon > .app-group-input {
+  position: relative;
+}
+
+.app-input-group-icon > .app-group-input > input {
+  padding-right: 56px;
+}
+
+.app-input-group-icon > .app-group-input > input:focus {
+  background-color: white;
+  box-shadow: 0px 3px 15px rgba(233, 230, 230, 0.5);
+  border: 0.8px solid rgba(65, 77, 104, 0.18);
+  color: #414d68;
+}
+
+.app-input-group-icon > .app-group-icon {
   position: absolute;
-  display: flex;
-  height: 100%;
-  padding-right: 24px;
-  padding-left: 24px;
   top: 0;
   right: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  padding-right: 24px;
 }
 
-.text-grey {
-  color: #676767;
-}
-
-.input-grouping > input {
-  padding-right: 48px;
-  height: 46px;
-}
-
-input {
-  background-color: #f1f3f9;
-  border: solid 1px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-}
-
-input:focus {
-  border: solid 1px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 8px 11px -10px #696c7545;
-}
-
-.icon-info {
-  color: #878ba2;
-}
-
-.icon-wrapper > .icon {
-  display: block;
-  margin: auto auto;
+.app-pils {
+  padding: 10px 20px 10px 20px;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 16px;
   text-align: center;
+  border-radius: 84px;
+}
+
+.app-input-group-icon > .app-group-icon > .icon {
+  width: 32px;
+}
+
+.pils-bg-info {
+  background: linear-gradient(180deg, #0081ff 0%, #00b2ff 99.48%);
+  color: white;
+}
+
+.pils-bg-success {
+  background: linear-gradient(180deg, #00d23b 0%, #69ee00 100%);
+  color: white;
 }
 </style>

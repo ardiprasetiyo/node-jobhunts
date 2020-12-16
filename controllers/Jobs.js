@@ -2,22 +2,33 @@ const jobstreetScraper = require('../scraper/Jobstreet')
 const kalibrrScraper = require('../scraper/Kalibrr')
 const glintsScraper = require('../scraper/Glints')
 
-const responseObject = (statusCode=null, message=null, data=null, reason=null) => ({statusCode: statusCode, message: message, data: data, reason: reason})
+const responseObject = (statusCode = null, message = null, data = null, reason = null) => ({
+    statusCode: statusCode,
+    message: message,
+    data: data,
+    reason: reason
+})
 const jobSourceList = ['JOBSTREET', 'KALIBRR', 'GLINTS']
 
 const mongoDB = require('../models/Mongo')
 
 const filterValidJobSources = (jobSources) => {
-    if( !Array.isArray(jobSources) ) return false
+    if (!Array.isArray(jobSources)) return false
     return jobSources.filter(source => jobSourceList.includes(source.toUpperCase())).map(source => source.toUpperCase())
 }
 
-const stringToArray = (arrayString='') => {
-    if( typeof arrayString != 'string' ) return false
-    try{ return JSON.parse(arrayString) }catch{ return false }
+const stringToArray = (arrayString = '') => {
+    if (typeof arrayString != 'string') return false
+    try {
+        return JSON.parse(arrayString)
+    } catch {
+        return false
+    }
 }
 
-exports.jobCatalogueSchema = ({...args}) => {
+exports.jobCatalogueSchema = ({
+    ...args
+}) => {
     let template = new Object({
         title: '',
         type: '',
@@ -44,9 +55,9 @@ exports.jobCatalogueSchema = ({...args}) => {
         posted_date: '',
         expired_date: ''
     })
-    
-    for( let key of Object.keys(args) ){
-        if( Object.keys(template).includes(key) ){
+
+    for (let key of Object.keys(args)) {
+        if (Object.keys(template).includes(key)) {
             template[key] = args[key]
         }
     }
@@ -58,29 +69,31 @@ exports.updateJobCatalogue = async (req, res) => {
     let jobSources = req.body['job-sources'] || []
 
     jobSources = stringToArray(jobSources)
-    if( !jobSources ) return res.json(responseObject(400, "Bad Request", null, "Invalid request body, no job sources selected"))
+    if (!jobSources) return res.json(responseObject(400, "Bad Request", null, "Invalid request body, no job sources selected"))
 
     jobSources = filterValidJobSources(jobSources)
     let jobCatalogue = []
 
-    if( jobSources.includes('JOBSTREET') ){
+    if (jobSources.includes('JOBSTREET')) {
         jobCatalogue.push(jobstreetScraper.getJobs())
     }
 
-    if( jobSources.includes('KALIBRR') ){
+    if (jobSources.includes('KALIBRR')) {
         jobCatalogue.push(kalibrrScraper.getJobs())
     }
 
-    if( jobSources.includes('GLINTS') ){
+    if (jobSources.includes('GLINTS')) {
         jobCatalogue.push(glintsScraper.getJobs())
     }
-    
+
     jobCatalogue = await Promise.all(jobCatalogue)
     res.json(responseObject(200, 'OK!'))
 
 }
 
-const resultObject = ({...args}) => new Object({
+const resultObject = ({
+    ...args
+}) => new Object({
     isError: {
         status: args.isError || false,
         reason: args.reason || null
@@ -88,14 +101,16 @@ const resultObject = ({...args}) => new Object({
     data: args.data || null
 })
 
-const getJobCatalogue = async({...args}) => { 
+const getJobCatalogue = async ({
+    ...args
+}) => {
     const searchQuery = args.searchQuery
     const isVocational = args.vocationalLevel
     const categories = args.jobCategory
 
     // Pagination
     const page = args.page - 1
-    const limit = 12
+    const limit = 30
     const offset = page * limit
 
     const jobCatalogueModel = await mongoDB.model('job_catalogue')
@@ -104,35 +119,33 @@ const getJobCatalogue = async({...args}) => {
         $match: {}
     }
 
-    if( isVocational ) aggregateData.$match.is_vocational = true
-    if( searchQuery ) aggregateData.$match.$text = { $search: searchQuery }
+    if (isVocational) aggregateData.$match.is_vocational = true
+    if (searchQuery) aggregateData.$match.$text = {
+        $search: searchQuery
+    }
 
     // Relation with job category
-    aggregateFacet.push(
-        {
-            $lookup: {
-                from: 'job_category',
-                localField: 'category',
-                foreignField: '_id',
-                as: 'category_detail'
-            }
+    aggregateFacet.push({
+        $lookup: {
+            from: 'job_category',
+            localField: 'category',
+            foreignField: '_id',
+            as: 'category_detail'
         }
-    )
+    })
 
     // Relation with job location
-    aggregateFacet.push(
-        {
-            $lookup: {
-                from: 'job_location',
-                localField: 'location',
-                foreignField: '_id',
-                as: 'location_detail'
-            }
+    aggregateFacet.push({
+        $lookup: {
+            from: 'job_location',
+            localField: 'location',
+            foreignField: '_id',
+            as: 'location_detail'
         }
-    )
+    })
 
     // filter by categories
-    if( categories.length > 0 ){
+    if (categories.length > 0) {
         let categoryQuery = {
             $match: {
                 $or: []
@@ -140,13 +153,15 @@ const getJobCatalogue = async({...args}) => {
         }
 
         let categoryMatch = {
-            category_detail:{
+            category_detail: {
                 $elemMatch: new Object()
             }
         }
 
-        for( let category of categories ){
-            let matchCategory = {...categoryMatch}
+        for (let category of categories) {
+            let matchCategory = {
+                ...categoryMatch
+            }
             matchCategory.category_detail.$elemMatch.alias = category
             categoryQuery.$match.$or.push(matchCategory)
         }
@@ -157,7 +172,7 @@ const getJobCatalogue = async({...args}) => {
     // Aggregate Count
     let aggregateCount = [...aggregateFacet]
     aggregateCount.push({
-        $group:{
+        $group: {
             _id: null,
             total_jobs: {
                 $sum: 1
@@ -166,33 +181,45 @@ const getJobCatalogue = async({...args}) => {
     })
 
     // Limiting and Skiping Query
-    aggregateFacet.push({$skip: offset})
-    aggregateFacet.push({$limit: limit})
+    aggregateFacet.push({
+        $skip: offset
+    })
+    aggregateFacet.push({
+        $limit: limit
+    })
 
     // Filtering category detail field
     aggregateFacet.push({
-        $project:{
-            category_detail:{
+        $project: {
+            category_detail: {
                 search_id: 0,
                 search_keywords: 0
             },
-            location_detail:{
-                search_id:0,
+            location_detail: {
+                search_id: 0,
                 search_keywords: 0
             }
         }
-    })  
+    })
 
-    try{
+    console.log(aggregateData, aggregateFacet)
+
+    try {
         const jobs = await jobCatalogueModel.aggregate([aggregateData, {
-            $facet:{
-                data: aggregateFacet, 
+            $facet: {
+                data: aggregateFacet,
                 count: aggregateCount
             }
         }])
-        return resultObject({data: jobs, isError: false})
-    }catch(exception){
-        return resultObject({isError: true, reason: exception.message})
+        return resultObject({
+            data: jobs,
+            isError: false
+        })
+    } catch (exception) {
+        return resultObject({
+            isError: true,
+            reason: exception.message
+        })
     }
 
 }
@@ -201,23 +228,23 @@ exports.getJobs = async (req, res) => {
     let queryParam = req.query
     let page = queryParam.page || 1
     let searchQuery = queryParam.searchQuery || ''
-    let jobCategory = queryParam.category  || []
+    let jobCategory = queryParam.category || []
 
     // if job category not an array assign its value to array
-    if( !Array.isArray(jobCategory) ) jobCategory = [jobCategory]
+    if (!Array.isArray(jobCategory)) jobCategory = [jobCategory]
 
     const vocationalLevel = queryParam.vocationalLevel == '1' ? true : false
     const jobs = await getJobCatalogue({
-        page: page, 
+        page: page,
         searchQuery: searchQuery,
         jobCategory: jobCategory,
         vocationalLevel: vocationalLevel
     })
-    
-    if( jobs.isError.status ){
+
+    if (jobs.isError.status) {
         res.json(responseObject(500, 'Internal Server Error', null, jobs.isError.reason))
         return
     }
-    
+
     res.json(responseObject(200, 'OK!', jobs.data, null))
 }
