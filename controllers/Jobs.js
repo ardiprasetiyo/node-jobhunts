@@ -202,8 +202,6 @@ const getJobCatalogue = async ({
         }
     })
 
-    console.log(aggregateData, aggregateFacet)
-
     try {
         const jobs = await jobCatalogueModel.aggregate([aggregateData, {
             $facet: {
