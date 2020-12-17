@@ -15,12 +15,16 @@ const mongoDB = require('./models/Mongo');
     await mongoDB.connect()
 })()
 
+
 app.use(logger('dev'));
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/vue-jobhunts/dist')));
+// SSL
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known')))
+
 
 app.use('/api', APIRoutes);
 
