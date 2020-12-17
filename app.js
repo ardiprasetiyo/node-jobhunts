@@ -14,8 +14,6 @@ const mongoDB = require('./models/Mongo');
     await mongoDB.connect()
 })()
 
-const hostname = "joobhunts.herokuapp.com"
-
 app.use(logger('dev'));
 app.use(cors())
 app.use(express.json());
@@ -24,13 +22,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/vue-jobhunts/dist')));
 // SSL
 app.use('/.well-known', express.static(path.join(__dirname, '.well-known')))
-app.use('*',function(req,res,next){
-    if(req.headers['x-forwarded-proto']!='https')
-      res.redirect(`https://${hostname}`+req.url)
-    else
-      next() /* Continue to other routes if we're not redirecting */
-  })
-
 app.use('/api', APIRoutes);
 
 module.exports = app;
