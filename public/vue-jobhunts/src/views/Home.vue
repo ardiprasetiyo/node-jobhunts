@@ -30,7 +30,7 @@
                     <input
                       type="text"
                       class="form-control app-input app-input-rounded"
-                      placeholder="Masukan kata kunci pekerjaan"
+                      placeholder="Cari pekerjaan impianmu"
                       v-model="querySearch"
                       @keyup.enter="updateData()"
                     />
@@ -92,12 +92,14 @@
     <section class="app-jobs-content" v-if="!isLoading">
       <div class="container">
         <div class="row">
+          
           <div
             class="col-12 col-lg-6 mt-2 mb-2"
             v-for="(job, jobIndex) of getJobs"
             :key="jobIndex"
           >
-            <div class="app-card card" @click="redirectJob(job.job_url)">
+          <a href="#!" class="app-nolink" @click="redirectJob(job.job_url)">
+            <div class="app-card card">
               <div class="card-body">
                 <div class="row">
                   <div class="col-12 col-lg-12 mt-2 mb-2">
@@ -161,6 +163,8 @@
                 </div>
               </div>
             </div>
+          </a>
+
           </div>
         </div>
       </div>
@@ -386,6 +390,12 @@ export default {
   background: #ffffff;
   box-shadow: 0px 3px 15px rgba(233, 230, 230, 0.5);
   border-radius: 11px;
+  height: 100%;
+  transition: 0.3s;
+}
+
+.app-card:hover{
+  box-shadow: 0px 14px 20px 2px rgb(165 163 163 / 40%)
 }
 
 .app-search {
@@ -468,6 +478,10 @@ export default {
   line-height: 16px;
   text-align: center;
   border-radius: 84px;
+}
+
+.app-nolink{
+  text-decoration: none;
 }
 
 .app-input-group-icon > .app-group-icon > .icon {
