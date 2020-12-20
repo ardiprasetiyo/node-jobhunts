@@ -434,7 +434,7 @@ export default {
     let searchQuery = this.$cookies.get("last-search");
     let isVocational = this.$cookies.get("is-vocational");
 
-    if (page) this.activePage = page;
+    if (page) this.activePage = parseInt(page);
     if (searchQuery) this.querySearch = searchQuery;
     if (isVocational) this.isVocational = Boolean(parseInt(isVocational));
 
