@@ -7,10 +7,26 @@
             <h1 class="app-navbar-title text-left text-poppins">Joobhunts</h1>
           </div>
           <div class="col-6">
-            <img
-              src="@/assets/icons/bookmark-active-icon.svg"
-              class="app-icon d-block my-auto float-right"
-            />
+            <div class="row">
+              <div class="col-lg-4 offset-lg-7 col-9 my-auto">
+                <a href="#!">
+                  <h2
+                    class="app-text-subheader float-right m-0 text-right"
+                    @click="linkTo('coming-soon')"
+                  >
+                    CV Builder
+                  </h2>
+                </a>
+              </div>
+              <div class="col-lg-1 col-3">
+                <a href="#!" @click="linkTo('coming-soon')">
+                  <img
+                    src="@/assets/icons/cv-builder-icon.svg"
+                    class="app-icon d-block my-auto float-right"
+                  />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -32,11 +48,23 @@
                       class="form-control app-input app-input-rounded"
                       placeholder="Cari pekerjaan impianmu"
                       v-model="querySearch"
-                      @keyup.enter="updateData()"
+                      ref="searchjob"
+                      @keyup.enter="setSearchQuery"
                     />
                   </div>
                   <div class="app-group-icon" @click="updateData()">
-                    <img src="@/assets/icons/search-icon.svg" class="icon" />
+                    <a href="#!" class="icon"
+                      ><img src="@/assets/icons/search-icon.svg"
+                    /></a>
+                  </div>
+                  <div
+                    class="app-group-icon search-clear"
+                    v-if="querySearch"
+                    @click="clearSearchQuery"
+                  >
+                    <a href="#!" class="icon"
+                      ><span class="material-icons">clear</span></a
+                    >
                   </div>
                 </div>
               </div>
@@ -49,6 +77,7 @@
                     id="isVocational"
                     class="ml-1"
                     ref="vocationalcheckbox"
+                    v-model="isVocational"
                     @click="setIsVocational"
                   />
                   <label
@@ -59,6 +88,22 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-funding mb-4">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-lg-4">
+            <a href="#!" @click="linkTo('/funding')" class="app-nolink">
+              <img
+                src="@/assets/images/funding.png"
+                alt=""
+                class="img img-fluid"
+              />
+            </a>
           </div>
         </div>
       </div>
@@ -79,7 +124,11 @@
               class="app-text-subheader text-poppins ml-3"
               v-html="
                 getTotalJobs > 0
-                  ? `<b>${getTotalJobs}</b> Pekerjaan ditemukan
+                  ? `Menampilkan ${
+                      activePage * jobPerPage > getTotalJobs
+                        ? ` hasil terakhir`
+                        : `<b>${activePage * jobPerPage}</b>`
+                    } dari <b>${getTotalJobs}</b> pekerjaan
                   `
                   : 'Pekerjaan tidak ditemukan'
               "
@@ -92,69 +141,71 @@
     <section class="app-jobs-content" v-if="!isLoading">
       <div class="container">
         <div class="row">
-          
           <div
             class="col-12 col-lg-6 mt-2 mb-2"
             v-for="(job, jobIndex) of getJobs"
             :key="jobIndex"
           >
-          <a href="#!" class="app-nolink" @click="redirectJob(job.job_url)">
-            <div class="app-card card">
-              <div class="card-body">
-                <div class="row">
-                  <div class="col-12 col-lg-12 mt-2 mb-2">
-                    <span class="app-pils pils-bg-info mx-2 text-opensans">{{
-                      capitalizeEachWord(job.type)
-                    }}</span>
-                    <span
-                      class="app-pils pils-bg-success mx-2 text-opensans"
-                      v-if="job.is_vocational"
-                      >SMA/SMK</span
-                    >
-                  </div>
-                  <div class="col-12 col-lg-12 mt-2">
-                    <div class="row">
-                      <div class="col-4 col-lg-4 my-auto">
-                        <img
-                          :src="job.company.logo"
-                          alt=""
-                          class="img img-fluid d-block mx-auto my-auto"
-                          width="92px"
-                        />
-                      </div>
-                      <div class="col-8 col-lg-8 my-auto">
-                        <h1 class="app-text-header-larger text-poppins">
-                          {{ job.title }}
-                        </h1>
-                      </div>
+            <a href="#!" class="app-nolink" @click="redirectJob(job.job_url)">
+              <div class="app-card card">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-12 col-lg-12 mt-2 mb-2">
+                      <span
+                        class="app-pils pils-bg-info mx-2 text-opensans"
+                        v-if="job.type"
+                        >{{ capitalizeEachWord(job.type) }}</span
+                      >
+                      <span
+                        class="app-pils pils-bg-success mx-2 text-opensans"
+                        v-if="job.is_vocational"
+                        >SMA/SMK</span
+                      >
                     </div>
-                    <div class="row">
-                      <div class="col-8 col-lg-8 offset-lg-4 offset-4">
-                        <h1 class="app-text-subheader text-opensans">
-                          {{ job.company.name }}
-                        </h1>
+                    <div class="col-12 col-lg-12 mt-2">
+                      <div class="row">
+                        <div class="col-4 col-lg-4 my-auto">
+                          <img
+                            :src="job.company.logo"
+                            alt=""
+                            class="img img-fluid d-block mx-auto my-auto"
+                            width="92px"
+                          />
+                        </div>
+                        <div class="col-8 col-lg-8 my-auto">
+                          <h1 class="app-text-header-larger text-poppins">
+                            {{ job.title }}
+                          </h1>
+                        </div>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-8 col-lg-8 offset-lg-4 offset-4">
-                        <div class="row">
-                          <div class="col-12 col-lg-12 mb-3">
-                            <h1 class="app-text-subheader text-opensans">
-                              Bandung
-                            </h1>
-                          </div>
-                          <div class="col-12 col-lg-12">
-                            <h1
-                              class="app-text-subheader font-weight-bold text-opensans"
-                            >
-                              {{
-                                salaryParse(
-                                  job.salary.min,
-                                  job.salary.max,
-                                  job.salary.type
-                                )
-                              }}
-                            </h1>
+                      <div class="row">
+                        <div class="col-8 col-lg-8 offset-lg-4 offset-4">
+                          <h1 class="app-text-subheader text-opensans">
+                            {{ job.company.name }}
+                          </h1>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-8 col-lg-8 offset-lg-4 offset-4">
+                          <div class="row">
+                            <div class="col-12 col-lg-12 mb-3">
+                              <h1 class="app-text-subheader text-opensans">
+                                Bandung
+                              </h1>
+                            </div>
+                            <div class="col-12 col-lg-12">
+                              <h1
+                                class="app-text-subheader font-weight-bold text-opensans"
+                              >
+                                {{
+                                  salaryParse(
+                                    job.salary.min,
+                                    job.salary.max,
+                                    job.salary.type
+                                  )
+                                }}
+                              </h1>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -162,9 +213,7 @@
                   </div>
                 </div>
               </div>
-            </div>
-          </a>
-
+            </a>
           </div>
         </div>
       </div>
@@ -253,6 +302,10 @@
 
 <script>
 import Vue from "vue";
+import VueCookies from "vue-cookies";
+import { mapGetters } from "vuex";
+
+Vue.use(VueCookies);
 
 export default {
   name: "Home",
@@ -269,6 +322,28 @@ export default {
     setIsVocational() {
       this.isVocational = this.$refs.vocationalcheckbox.checked;
       this.activePage = 1;
+      this.$cookies.set("is-vocational", this.isVocational ? "1" : "0", "1d");
+      this.$cookies.set("last-page", this.activePage, "1d");
+      this.updateData();
+    },
+
+    linkTo(path) {
+      this.$router.push(path);
+    },
+
+    setSearchQuery() {
+      this.querySearch = this.$refs.searchjob.value;
+      this.activePage = 1;
+      this.$cookies.set("last-search", this.querySearch, "1d");
+      this.$cookies.set("last-page", this.activePage, "1d");
+      this.updateData();
+    },
+
+    clearSearchQuery() {
+      this.querySearch = "";
+      this.activePage = 1;
+      this.$cookies.set("last-search", this.querySearch, "1d");
+      this.$cookies.set("last-page", this.activePage, "1d");
       this.updateData();
     },
 
@@ -280,6 +355,7 @@ export default {
         isVocational: this.isVocational,
       });
       this.isLoading = false;
+      window.scrollTo(0, 0);
     },
 
     capitalizeEachWord(text) {
@@ -292,7 +368,6 @@ export default {
       window.open(url);
     },
     moveToPage(numPage) {
-      console.log(numPage);
       if (
         numPage == 0 ||
         numPage >
@@ -301,6 +376,7 @@ export default {
         return;
       this.activePage = numPage;
       this.updateData();
+      this.$cookies.set("last-page", this.activePage, "1d");
     },
     jumpToPage() {
       let numPage = Number.parseInt(this.$refs.pagination.value);
@@ -354,147 +430,34 @@ export default {
     },
   },
   async mounted() {
+    let page = this.$cookies.get("last-page");
+    let searchQuery = this.$cookies.get("last-search");
+    let isVocational = this.$cookies.get("is-vocational");
+
+    if (page) this.activePage = page;
+    if (searchQuery) this.querySearch = searchQuery;
+    if (isVocational) this.isVocational = Boolean(parseInt(isVocational));
+
     this.isLoading = true;
-    await this.$store.dispatch("getJobs");
+    await this.updateData();
     this.isLoading = false;
   },
 };
 </script>
 
 <style scoped>
-.text-poppins {
-  font-family: "Poppins", sans-serif;
+.search-clear {
+  right: 45px !important;
 }
 
-.text-opensans {
-  font-family: "Open Sans", sans-serif;
-}
-
-.app-navbar-wrapper {
-  padding: 20px !important;
-}
-
-.app-navbar-title {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 28px;
-  color: #414d68;
-  margin: 0;
-}
-
-.app-icon {
-  width: 36px;
-}
-
-.app-card {
-  background: #ffffff;
-  box-shadow: 0px 3px 15px rgba(233, 230, 230, 0.5);
-  border-radius: 11px;
-  height: 100%;
-  transition: 0.3s;
-}
-
-.app-card:hover{
-  box-shadow: 0px 14px 20px 2px rgb(165 163 163 / 40%)
+.search-clear > .icon {
+  display: block;
+  margin: auto auto;
+  color: #868686;
+  text-decoration: none;
 }
 
 .app-search {
   padding-top: 98px;
-}
-
-.app-text-disabled {
-  color: #a9a9a9;
-}
-
-.app-text-header {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 26px;
-  color: #414d68;
-}
-
-.app-text-header-larger {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 18px;
-  line-height: 26px;
-  color: #414d68;
-}
-
-.app-text-subheader {
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 16px;
-  color: #666f84;
-}
-
-.app-input-rounded {
-  border-radius: 20px;
-}
-
-.app-input {
-  background: #fbfbfb;
-  border: 0.8px solid rgba(65, 77, 104, 0.18);
-  box-sizing: border-box;
-  padding: 10px;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 18px;
-  color: #8f94a0;
-}
-
-.app-input-group-icon > .app-group-input {
-  position: relative;
-}
-
-.app-input-group-icon > .app-group-input > input {
-  padding-right: 56px;
-}
-
-.app-input-group-icon > .app-group-input > input:focus {
-  background-color: white;
-  box-shadow: 0px 3px 15px rgba(233, 230, 230, 0.5);
-  border: 0.8px solid rgba(65, 77, 104, 0.18);
-  color: #414d68;
-}
-
-.app-input-group-icon > .app-group-icon {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  padding-right: 24px;
-}
-
-.app-pils {
-  padding: 10px 20px 10px 20px;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 16px;
-  line-height: 16px;
-  text-align: center;
-  border-radius: 84px;
-}
-
-.app-nolink{
-  text-decoration: none;
-}
-
-.app-input-group-icon > .app-group-icon > .icon {
-  width: 32px;
-}
-
-.pils-bg-info {
-  background: linear-gradient(180deg, #0081ff 0%, #00b2ff 99.48%);
-  color: white;
-}
-
-.pils-bg-success {
-  background: linear-gradient(180deg, #00d23b 0%, #69ee00 100%);
-  color: white;
 }
 </style>

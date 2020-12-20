@@ -1,3 +1,208 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script><script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script><script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"><title>Joobhunts</title><style>body {
       background-color: #F8F8F8;
-    }</style><link href="/css/app.0f30f911.css" rel="preload" as="style"><link href="/js/app.2d94a1db.js" rel="preload" as="script"><link href="/js/chunk-vendors.1aae4a00.js" rel="preload" as="script"><link href="/css/app.0f30f911.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but vue-jobhunts doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><script src="/js/chunk-vendors.1aae4a00.js"></script><script src="/js/app.2d94a1db.js"></script></body></html>
+    }
+
+    .text-poppins {
+      font-family: "Poppins", sans-serif;
+    }
+
+    .text-opensans {
+      font-family: "Open Sans", sans-serif;
+    }
+
+    .app-navbar-wrapper {
+      padding: 20px !important;
+    }
+
+    .app-navbar-title {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 28px;
+      color: #414d68;
+      margin: 0;
+    }
+
+    .app-icon {
+      width: 36px;
+    }
+
+    .app-card {
+      background: #ffffff;
+      box-shadow: 0px 3px 15px rgba(233, 230, 230, 0.5);
+      border-radius: 11px;
+      height: 100%;
+      transition: 0.3s;
+    }
+
+    .app-card:hover {
+      box-shadow: 0px 14px 20px 2px rgb(165 163 163 / 40%)
+    }
+
+    .app-text-disabled {
+      color: #a9a9a9;
+    }
+
+    .app-text-header {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 32px;
+      color: #414d68;
+    }
+
+    .app-text-header-larger {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 18px;
+      line-height: 32px;
+      color: #414d68;
+    }
+
+    .app-text-header-largest {
+      font-style: normal;
+      font-weight: 500;
+      font-size: 24px;
+      line-height: 32px;
+      color: #414d68;
+    }
+
+    .app-text-subheader {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 24px;
+      color: #666f84;
+    }
+
+    .app-input-rounded {
+      border-radius: 20px;
+    }
+
+    .app-input {
+      background: #fbfbfb;
+      border: 0.8px solid rgba(65, 77, 104, 0.18);
+      box-sizing: border-box;
+      padding: 10px;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 18px;
+      color: #8f94a0;
+    }
+
+    .app-input-group-icon>.app-group-input {
+      position: relative;
+    }
+
+    .app-input-group-icon>.app-group-input>input {
+      padding-right: 56px;
+    }
+
+    .app-input-group-icon>.app-group-input>input:focus {
+      background-color: white;
+      box-shadow: 0px 3px 15px rgba(233, 230, 230, 0.5);
+      border: 0.8px solid rgba(65, 77, 104, 0.18);
+      color: #414d68;
+    }
+
+    .app-input-group-icon>.app-group-icon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      text-align: center;
+      padding-right: 24px;
+    }
+
+    .app-input-group-icon>.app-group-icon>.icon {
+      display: block;
+      margin: auto auto;
+    }
+
+    .icon>span {
+      display: block;
+      margin: auto auto;
+    }
+
+    .app-pils {
+      padding: 10px 20px 10px 20px;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 16px;
+      line-height: 16px;
+      text-align: center;
+      border-radius: 84px;
+    }
+
+    .app-nolink {
+      text-decoration: none !important;
+    }
+
+    .app-input-group-icon>.app-group-icon>.icon {
+      width: 32px;
+    }
+
+    .app-button {
+      padding: 10px;
+      background-color: #f7f7f7;
+      text-decoration: none !important;
+      border-radius: 20px;
+      border-style: solid;
+      border-width: 0.3px;
+      transition: 0.4s;
+      color: #414d68;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 16px;
+      text-align: center;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .app-button:hover {
+      box-shadow: 0px 10px 10px 2px rgb(165 163 163 / 10%);
+    }
+
+    .app-button-rounded {
+      border-radius: 60px;
+    }
+
+    .pils-bg-info {
+      background: linear-gradient(180deg, #0081ff 0%, #00b2ff 99.48%);
+      color: white;
+    }
+
+    .pils-bg-success {
+      background: linear-gradient(180deg, #00d23b 0%, #69ee00 100%);
+      color: white;
+    }
+
+    .app-text-error {
+      color: #f14d4d;
+    }
+
+    .app-text-primary {
+      color: #414d68;
+    }
+
+    .app-input-error {
+      border-color: red;
+    }
+
+    .app-background-success {
+      background: #00E117;
+      box-shadow: 0px 20px 20px -20px rgba(16, 200, 0, 0.5);
+      color: white !important;
+    }
+
+    .app-background-default {
+      background-color: #f7f7f7;
+      border: solid 0.1px rgba(0, 0, 0, 0.1);
+      box-shadow: 0px 20px 20px -20px rgba(0, 0, 0, 0.2);
+    }
+
+    .app-background-info {
+      background: linear-gradient(180deg, #0081ff 0%, #00b2ff 99.48%);
+      color: white;
+      border: solid 0.3px rgba(0,0,0,0.1);
+    }</style><link href="/css/app.946119cb.css" rel="preload" as="style"><link href="/js/app.0efe50b1.js" rel="preload" as="script"><link href="/js/chunk-vendors.8c539a40.js" rel="preload" as="script"><link href="/css/app.946119cb.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but vue-jobhunts doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><script src="/js/chunk-vendors.8c539a40.js"></script><script src="/js/app.0efe50b1.js"></script></body></html>

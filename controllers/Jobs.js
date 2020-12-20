@@ -180,6 +180,13 @@ const getJobCatalogue = async ({
         }
     })
 
+    // Sort
+    aggregateFacet.push({
+        $sort: {
+            posted_date: -1
+        }
+    })
+
     // Limiting and Skiping Query
     aggregateFacet.push({
         $skip: offset
