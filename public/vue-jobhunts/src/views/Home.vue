@@ -12,14 +12,14 @@
                 <a href="#!">
                   <h2
                     class="app-text-subheader float-right m-0 text-right"
-                    @click="linkTo('coming-soon')"
+                    @click="linkTo('cv-builder')"
                   >
                     CV Builder
                   </h2>
                 </a>
               </div>
               <div class="col-lg-1 col-3">
-                <a href="#!" @click="linkTo('coming-soon')">
+                <a href="#!" @click="linkTo('cv-builder')">
                   <img
                     src="@/assets/icons/cv-builder-icon.svg"
                     class="app-icon d-block my-auto float-right"

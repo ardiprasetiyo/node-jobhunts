@@ -24,6 +24,39 @@ const registeredCollections = [{
         })
     },
     {
+        name: 'cv',
+        schema: new Schema({
+            cv_id:{
+                type: String,
+                required: true
+            },
+            fullname: {
+                type: String
+            },
+            address: {
+                type: Object
+            },
+            phoneNumbers: {
+                type: Array
+            },
+            socialMedia: {
+                type: Array
+            },
+            educations: {
+                type: Array
+            },
+            skills: {
+                type: Array
+            },
+            experience:{
+                type: Object
+            },
+            achivements: {
+                type: Array
+            }
+        })
+    },
+    {
         name: 'job_location',
         schema: new Schema({
             name: {

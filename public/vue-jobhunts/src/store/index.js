@@ -9,7 +9,9 @@ export default new Vuex.Store({
     currentJobs: {
       jobs: [],
       totalJobs: 0
-    }
+    },
+    currentCv: {
+    },
   },
   mutations: {
     setCurrentJobs(state, payload) {
@@ -24,7 +26,12 @@ export default new Vuex.Store({
       }
 
       state.currentJobs.totalJobs = totalJobs
-    }
+    },
+
+    setCurrentCv(state, payload){
+      state.currentCv = payload || {}
+    },
+
   },
   actions: {
     async getJobs(state, payload = {}) {
@@ -48,9 +55,49 @@ export default new Vuex.Store({
       })
       if (response.errors.status) {
         console.log(`ERROR ${response.errrors.reason}`)
+        return
       }
 
       state.commit('setCurrentJobs', response.data)
+    },
+
+    async getCv(state, payload = {}){
+      let cvId = payload.cvId
+      if( !cvId ) return
+      let url = `${process.env.VUE_APP_API_SERVER_URL}/api/v1/cv/${cvId}`
+      let response = await Request.Request({
+        requestUrl: url,
+        requestMethod: "GET"
+      })
+      if( response.errors.status ){
+        console.log(`[ERROR] ${response.errors.reason}`)
+        return
+      }
+
+      state.commit('setCurrentCv', response.data)
+    },
+
+    async storeCv(state, payload = {}){
+      let cvData = payload.cvData
+      if( !cvData ){
+        console.log(`[ERROR] No CV Data`)
+        return 
+      }
+
+      let url = `${process.env.VUE_APP_API_SERVER_URL}/api/v1/cv/`
+      let response = await Request.Request({
+        requestUrl: url,
+        requestMethod: "POST",
+        requestBody: {
+          'cv': cvData
+        },
+        
+      })
+
+      if( response.errors.status ){
+        console.log(`[ERROR] ${response.errors.reason}`)
+        return
+      }
     }
   },
   modules: {}

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import CVBuilder from '../views/CVBuilder.vue'
+import CV from '../views/CV.vue'
 import ComingSoon from '../views/ComingSoon.vue'
 import Funding from "../views/Funding.vue"
 
@@ -27,6 +28,11 @@ const routes = [
     path: '/funding',
     name: "Funding",
     component: Funding
+  },
+  {
+    path: '/cv/:cvId',
+    name: "CV",
+    component: CV
   }
 ]
 
