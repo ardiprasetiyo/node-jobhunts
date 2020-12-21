@@ -13,7 +13,7 @@ exports.storeCv = async (req, res) => {
     try{
         let cvObject = JSON.parse(cvData)
         let cvModel = await mongoDB.model('cv')
-        let result = await cvModel.findOneAndUpdate(cvObject)
+        let result = await cvModel.findOneAndUpdate({cv_id: cvObject.cv_id}, cvObject)
         if( !result ){
             await cvModel.insertMany(cvObject)
         }

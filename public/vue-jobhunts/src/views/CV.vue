@@ -225,7 +225,7 @@
                   <div class="row">
                     <div class="col-12 mb-4 mt-4">
                       <h2 class="app-text-subheader text-poppins">
-                        Pengalaman Kerja
+                        Pengalaman Kerja/Magang
                       </h2>
                     </div>
                     <div class="col-12">
@@ -266,7 +266,7 @@
                   <div class="row">
                     <div class="col-12 mb-4 mt-4">
                       <h2 class="app-text-subheader text-poppins">
-                        Pengalaman Organisasi dan Komunitas
+                        Pengalaman Organisasi/Komunitas
                       </h2>
                     </div>
                     <div class="col-12">
