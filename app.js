@@ -23,5 +23,5 @@ app.use(express.static(path.join(__dirname, 'public/vue-jobhunts/dist')));
 // SSL
 app.use('/.well-known', express.static(path.join(__dirname, '.well-known')))
 app.use('/api', APIRoutes);
-
+app.get('*', express.static(path.join(__dirname, 'public/vue-jobhunts/dist')))
 module.exports = app;
