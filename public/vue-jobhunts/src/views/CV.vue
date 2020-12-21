@@ -47,6 +47,9 @@
                       <h2 class="app-text-header-largest text-poppins">
                         Curriculum Vitae
                       </h2>
+                      <a :href="getCvUrl" class="app-nolink text-opensans">
+                        {{ getCvUrl }}
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -386,6 +389,9 @@ export default {
   },
 
   computed: {
+    getCvUrl() {
+      return `${process.env.VUE_APP_API_SERVER_URL}/cv/${this.$route.params.cvId}`;
+    },
     getEducations() {
       let educations = [...this.candidate.educations];
       let parsedEducations = [];

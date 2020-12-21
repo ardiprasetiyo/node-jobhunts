@@ -954,6 +954,7 @@
                     </a>
                   </div>
                   <div class="col-6 col-lg-6">
+                    <textarea style="display: none" ref="cvUrl"></textarea>
                     <button
                       class="app-button app-background-success btn-block button-menu"
                       @click="generateCV"
@@ -1474,21 +1475,22 @@ export default {
     },
 
     async generateCV(ev) {
-      let generateButton = ev.target;
-      let defaultValue = generateButton.innerHTML;
-
       let cvData = this.candidate;
       let decryptedUid = atob(localStorage.getItem(btoa("app-uid")));
+      let cvUrl = `${process.env.VUE_APP_API_SERVER_URL}/cv/${decryptedUid}`;
+
       cvData["cv_id"] = decryptedUid;
+
+      let generateButton = ev.target;
+      let defaultValue = generateButton.innerHTML;
 
       generateButton.innerHTML = "Tunggu Sebentar ...";
       await this.$store.dispatch("storeCv", { cvData: JSON.stringify(cvData) });
       await this.$store.dispatch("getCv", { cvId: decryptedUid });
 
       generateButton.innerHTML = defaultValue;
-
       if (this.$store.state.currentCv.data) {
-        window.open(`http://${location.host}/cv/${decryptedUid}`);
+        window.open(cvUrl);
         return;
       }
 
