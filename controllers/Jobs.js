@@ -86,7 +86,8 @@ exports.updateJobCatalogue = async (req, res) => {
         jobCatalogue.push(glintsScraper.getJobs())
     }
 
-    jobCatalogue = await Promise.all(jobCatalogue)
+    // jobCatalogue = await Promise.all(jobCatalogue)
+    jobCatalogue = Promise.all(jobCatalogue) // Do not awaiting response
     res.json(responseObject(200, 'OK!'))
 
 }

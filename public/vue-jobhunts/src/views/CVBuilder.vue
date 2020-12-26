@@ -1731,6 +1731,13 @@ export default {
       );
       this.saveChanges();
     },
+    arrayObjectCopy(arr) {
+      let arrCopy = [];
+      for (let item of arr) {
+        if (typeof item == "object" && item !== null) arrCopy.push({ ...item });
+      }
+      return arrCopy;
+    },
     parseMonth(number) {
       let monthMap = new Map();
       monthMap.set(0, "Januari");
@@ -1770,11 +1777,12 @@ export default {
   computed: {
     getEducations() {
       let educations = [...this.candidate.educations];
+      educations = this.arrayObjectCopy(educations);
       let parsedEducations = [];
       for (let education of educations) {
         if (education.graduateDate) {
           education.graduateDate = `
-          ${this.parseMonth(new Date(education.graduateDate).getMonth())} 
+          ${this.parseMonth(new Date(education.graduateDate).getMonth())}
           ${new Date(education.graduateDate).getFullYear()}`;
         }
         parsedEducations.push(education);
@@ -1785,24 +1793,26 @@ export default {
 
     getWorkExperiences() {
       let works = [...this.candidate.experience.work];
+      works = this.arrayObjectCopy(works);
       let parsedWorks = [];
       for (let work of works) {
         work.startDate = `
-        ${this.parseMonth(new Date(work.startDate).getMonth())} 
+        ${this.parseMonth(new Date(work.startDate).getMonth())}
         ${new Date(work.startDate).getFullYear()}`;
 
         work.endDate = `
-        ${this.parseMonth(new Date(work.endDate).getMonth())} 
+        ${this.parseMonth(new Date(work.endDate).getMonth())}
         ${new Date(work.endDate).getFullYear()}`;
 
         parsedWorks.push(work);
       }
 
-      return parsedWorks;
+      return works;
     },
 
     getVolunteerExperiences() {
       let volunteers = [...this.candidate.experience.volunteer];
+      volunteers = this.arrayObjectCopy(volunteers);
       let parsedVolunteers = [];
       for (let volunteer of volunteers) {
         volunteer.startDate = `
