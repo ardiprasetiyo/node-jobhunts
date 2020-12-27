@@ -1,3 +1,6 @@
+const dotenv = require('dotenv')
+dotenv.config()
+
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -10,7 +13,7 @@ const APIRoutes = require('./routes/api')
 const app = express();
 const mongoDB = require('./models/Mongo');
 
-(async() => {
+(async () => {
     console.log(`[INFO] MongoDB Connecting to database ...`)
     await mongoDB.connect()
 })()
